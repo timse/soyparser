@@ -25,7 +25,7 @@ const squote = P.string('\'');
 const underscore = P.string('_');
 
 const attributeName = joined(P.letter, P.string('-'));
-const html = P.noneOf('{}').many().desc("Html Char");
+const html = nodeMap(S.HtmlFragment, P.noneOf('{}').many().desc("Html Char"));
 
 const identifierName = P.seqMap(
   P.alt(P.letter, underscore),
@@ -324,7 +324,7 @@ function otherCmd(name: string, ...inter: Array<string>): P.Parser<S.OtherCmd> {
 
 function bodyFor(name: string, ...inter: Array<String>): P.Parser<S.Body> {
   const bodyParser: P.Parser<S.Body> = P.lazy(() =>
-    html.then(P.alt(
+    P.alt(
       closeCmd(name).result([]),
       P.alt(...inter.map(openCmd))
         .result([])
@@ -338,10 +338,11 @@ function bodyFor(name: string, ...inter: Array<String>): P.Parser<S.Body> {
           otherCmd('foreach', 'ifempty'),
           otherCmd('msg', 'fallbackmsg'),
           otherCmd('switch'),
-          interpolation('{', '}')),
+          interpolation('{', '}'),
+          html
+        ),
         bodyParser,
         reverseJoin)))
-  );
 
   return bodyParser;
 }

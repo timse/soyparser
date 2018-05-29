@@ -46,6 +46,19 @@ export function Program(mark: Mark, namespace: string, body: Array<Template>): P
   };
 }
 
+export interface HtmlFragment extends Node {
+  content: String,
+  type: 'HtmlFragment',
+}
+
+export function HtmlFragment(mark: Mark, body: Array<String>): HtmlFragment {
+  return {
+    content: body.join(""),
+    mark,
+    type: 'HtmlFragment'
+  };
+}
+
 export interface Attribute extends Node {
   name: string,
   value: string,
